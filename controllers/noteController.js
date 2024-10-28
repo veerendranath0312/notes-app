@@ -1,5 +1,6 @@
 const Note = require('../models/note.js')
 const User = require('../models/user.js')
+const jwt = require('jsonwebtoken')
 
 const getAllNotes = async (req, res) => {
   const notes = await Note.find({}).populate('user', { username: 1, name: 1 })
@@ -17,10 +18,26 @@ const getNote = async (req, res) => {
   }
 }
 
+const getTokenFrom = (req) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ')
+  }
+
+  return null
+}
+
 const createNote = async (req, res) => {
   const body = req.body
 
-  const user = await User.findById(body.userId)
+  const decodedToken = jwt.verify(getTokenFrom(req), process.env.SECRET)
+  console.log(decodedToken)
+
+  if (!decodedToken.id) {
+    return res.status(401).json({ error: 'token invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
 
   const createdNote = await Note.create({
     content: body.content,

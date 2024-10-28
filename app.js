@@ -5,6 +5,7 @@ require('express-async-errors')
 const mongoose = require('mongoose')
 const notesRouter = require('./routes/noteRoutes.js')
 const usersRouter = require('./routes/userRouter.js')
+const loginRouter = require('./routes/loginRoutes.js')
 const middleware = require('./utils/middleware.js')
 const logger = require('./utils/logger.js')
 
@@ -28,6 +29,7 @@ app.use(middleware.requestLogger) // Custom middleware
 
 app.use('/api/notes', notesRouter)
 app.use('/api/users', usersRouter)
+app.use('/api/login', loginRouter)
 
 app.use(middleware.unknownEndpoint)
 
