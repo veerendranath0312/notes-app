@@ -23,7 +23,8 @@ const login = async (req, res) => {
   // If authentication is successful, generate a JWT
   const token = jwt.sign(
     { username: user.username, id: user._id }, // Payload containing username and user ID
-    process.env.SECRET // Secret key for signing the token
+    process.env.SECRET, // Secret key for signing the token
+    { expiresIn: 60 * 60 } // token expires in 60*60 seconds, that is, in one hour
   )
 
   // Return a 200 status with the token, username, and user's name
