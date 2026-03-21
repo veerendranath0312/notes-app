@@ -1,0 +1,16 @@
+{
+  "name": "notes-app",
+  "version": "1.0.0",
+  "description": "notes app backend",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "author": "veerendranath",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
