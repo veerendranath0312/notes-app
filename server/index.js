@@ -58,26 +58,68 @@ app.post('/api/notes', (req, res) => {
   })
 })
 
-app.get('/api/notes/:id', (req, res) => {
+app.get('/api/notes/:id', (req, res, next) => {
   const { id } = req.params
 
+  Note.findById(id)
+    .then((note) => {
+      if (note) {
+        res.status(200).json(note)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch((error) => next(error))
+})
+
+app.put('/api/notes/:id', (req, res, next) => {
+  const { id } = req.params
+  const { content, important } = req.body
+
   Note.findById(id).then((note) => {
-    res.status(200).json(note)
+    if (!note) {
+      return res.status(404).end()
+    }
+
+    note.content = content
+    note.important = important
+
+    return note
+      .save()
+      .then((updatedNote) => {
+        res.status(200).json(updatedNote)
+      })
+      .catch((error) => next(error))
   })
 })
 
-app.delete('/api/notes/:id', (req, res) => {
+app.delete('/api/notes/:id', (req, res, next) => {
   const { id } = req.params
 
-  notes = notes.filter((note) => note.id !== id)
-  res.status(204).end()
+  Note.findByIdAndDelete(id)
+    .then((result) => res.status(204).end())
+    .catch((error) => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
   res.status(404).json({ error: 'unknown endpoint' })
 }
 
+const errorHandler = (error, req, res, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return res.status(400).json({ error: 'malformatted id' })
+  }
+
+  next(error)
+}
+
+// handler of requests with unknown endpoint
 app.use(unknownEndpoint)
+
+// this should be the last loaded middleware
+// also all the routes should be registered before this!
+app.use(errorHandler)
 
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}...`)
