@@ -100,7 +100,7 @@ app.delete('/api/notes/:id', (req, res, next) => {
   const { id } = req.params
 
   Note.findByIdAndDelete(id)
-    .then((result) => res.status(204).end())
+    .then(() => res.status(204).end())
     .catch((error) => next(error))
 })
 
@@ -112,7 +112,7 @@ const errorHandler = (error, req, res, next) => {
   console.error(error.message)
   if (error.name === 'CastError') {
     return res.status(400).json({ error: 'malformatted id' })
-  } else if ((error.name = 'ValidationError')) {
+  } else if (error.name === 'ValidationError') {
     return res.status(400).json({ error: error.message })
   }
 
